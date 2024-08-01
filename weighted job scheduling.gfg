@@ -1,0 +1,59 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+// A job has start time, finish time and profit.
+struct Job
+{
+	int start, finish, profit;
+};
+
+// A utility function that is used for sorting events
+// according to finish time
+bool jobComparator(Job s1, Job s2)
+{
+	return (s1.finish < s2.finish);
+}
+
+// Find the latest job (in sorted array) that doesn't
+// conflict with the job[i]. If there is no compatible job,
+// then it returns -1.
+
+
+// A recursive function that returns the maximum possible
+// profit from given array of jobs. The array of jobs must
+// be sorted according to finish time.
+int findMaxProfitRec(Job arr[], int i,int fin_time,int n)
+{
+	// Base case
+	if (i == n) return 0;
+
+	// Find profit when current job is included
+	int inclProf = -1e7;
+	if (arr[i].start>=fin_time)
+	inclProf = arr[i].profit+findMaxProfitRec(arr, i+1,arr[i].finish,n);
+
+	// Find profit when current job is excluded
+	int exclProf = findMaxProfitRec(arr, i+1,fin_time,n);
+
+	return max(inclProf, exclProf);
+}
+
+// The main function that returns the maximum possible
+// profit from given array of jobs
+int findMaxProfit(Job arr[], int n)
+{
+	// Sort jobs according to finish time
+	sort(arr, arr+n, jobComparator);
+
+	return findMaxProfitRec(arr,0,-1,n);
+}
+
+// Driver program
+int main()
+{
+	Job arr[] = {{3, 10, 20}, {1, 2, 50}, {6, 19, 100}, {2, 100, 200}};
+	int n = sizeof(arr)/sizeof(arr[0]);
+	cout << "The optimal profit is " << findMaxProfit(arr, n);
+	return 0;
+}
